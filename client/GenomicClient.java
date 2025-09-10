@@ -7,7 +7,7 @@ import java.util.logging.*;
 public class GenomicClient {
     private static final String SERVER_HOST = "localhost";
     private static final int SERVER_PORT = 8443;
-    private static final String TRUSTSTORE_PATH = "certs/client.jks";
+    private static final String TRUSTSTORE_PATH = "../certs/client.jks";
     private static final String TRUSTSTORE_PASSWORD = "genomic123";
     private static final Logger logger = Logger.getLogger(GenomicClient.class.getName());
     
@@ -23,35 +23,41 @@ public class GenomicClient {
     
     private void setupLogging() {
         try {
-            FileHandler fileHandler = new FileHandler("client/logs/genomic_client.log", true);
+            FileHandler fileHandler = new FileHandler("logs/genomic_client.log", true);
             fileHandler.setFormatter(new SimpleFormatter());
             logger.addHandler(fileHandler);
             logger.setLevel(Level.INFO);
         } catch (IOException e) {
-            System.err.println("Failed to setup logging: " + e.getMessage());
+            System.err.println("Falló configuración de logging: " + e.getMessage());
         }
     }
     
     public boolean connect() {
         try {
+            // Create SSL context with truststore
             SSLContext sslContext = createSSLContext();
             SSLSocketFactory factory = sslContext.getSocketFactory();
+            
             socket = (SSLSocket) factory.createSocket(SERVER_HOST, SERVER_PORT);
             socket.setEnabledCipherSuites(socket.getSupportedCipherSuites());
+            
             reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             writer = new PrintWriter(socket.getOutputStream(), true);
+            
+            // Wait for server ready message
             String response = reader.readLine();
             if ("GENOMIC_SERVER_READY".equals(response)) {
-                logger.info("Connected to Genomic Server");
-                console.displayMessage("Connected to Genomic Server successfully!");
+                logger.info("Conectado al Servidor Genómico");
+                console.displayMessage("¡Conectado al Servidor Genómico exitosamente!");
                 return true;
             } else {
-                console.displayError("Unexpected server response: " + response);
+                console.displayError("Respuesta inesperada del servidor: " + response);
                 return false;
             }
+            
         } catch (Exception e) {
-            console.displayError("Failed to connect to server: " + e.getMessage());
-            logger.severe("Connection failed: " + e.getMessage());
+            console.displayError("Falló conexión al servidor: " + e.getMessage());
+            logger.severe("Conexión falló: " + e.getMessage());
             return false;
         }
     }
@@ -64,8 +70,10 @@ public class GenomicClient {
         
         TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
         tmf.init(trustStore);
+        
         SSLContext sslContext = SSLContext.getInstance("TLS");
         sslContext.init(null, tmf.getTrustManagers(), null);
+        
         return sslContext;
     }
     
@@ -75,9 +83,11 @@ public class GenomicClient {
         }
         
         console.displayWelcome();
+        
         while (true) {
             try {
                 int choice = console.showMainMenu();
+                
                 switch (choice) {
                     case 1:
                         createPatient();
@@ -98,153 +108,184 @@ public class GenomicClient {
                         testConnection();
                         break;
                     case 0:
-                        console.displayMessage("Goodbye!");
+                        console.displayMessage("¡Adiós!");
                         return;
                     default:
-                        console.displayError("Invalid option. Please try again.");
+                        console.displayError("Opción inválida. Por favor intente de nuevo.");
                 }
             } catch (Exception e) {
                 console.displayError("Error: " + e.getMessage());
-                logger.severe("Session error: " + e.getMessage());
+                logger.severe("Error de sesión: " + e.getMessage());
             }
         }
     }
     
     private void createPatient() throws IOException {
-        console.displayMessage("\n=== Create New Patient ===");
-        String fullName = console.getInput("Full Name: ");
-        String documentId = console.getInput("Document ID: ");
-        String contactEmail = console.getInput("Contact Email: ");
-        String ageStr = console.getInput("Age: ");
-        String sex = console.getInput("Sex (M/F): ");
-        String clinicalNotes = console.getInput("Clinical Notes: ");
+        console.displayMessage("\n=== Crear Nuevo Paciente ===");
+        
+        String fullName = console.getInput("Nombre Completo: ");
+        String documentId = console.getInput("Documento de Identidad: ");
+        String contactEmail = console.getInput("Email de Contacto: ");
+        String ageStr = console.getInput("Edad: ");
+        String sex = console.getInput("Sexo (M/F): ");
+        String clinicalNotes = console.getInput("Notas Clínicas: ");
+        
         try {
             int age = Integer.parseInt(ageStr);
+            
             String command = String.join("|", "CREATE_PATIENT", fullName, documentId, 
                                        contactEmail, String.valueOf(age), sex, clinicalNotes);
+            System.out.println("Comando enviado: " + command);
             writer.println(command);
             String response = reader.readLine();
             
             if (response.startsWith("PATIENT_CREATED|")) {
                 String patientId = response.split("\\|")[1];
-                console.displaySuccess("Patient created successfully! Patient ID: " + patientId);
-                logger.info("Patient created: " + patientId);
+                console.displaySuccess("¡Paciente creado exitosamente! ID del Paciente: " + patientId);
+                logger.info("Paciente creado: " + patientId);
             } else if (response.startsWith("ERROR|")) {
-                console.displayError("Failed to create patient: " + response.substring(6));
+                console.displayError("Falló al crear paciente: " + response.substring(6));
             }
+            
         } catch (NumberFormatException e) {
-            console.displayError("Invalid age format. Please enter a number.");
+            console.displayError("Formato de edad inválido. Por favor ingrese un número.");
         }
     }
     
     private void getPatient() throws IOException {
-        console.displayMessage("\n=== Get Patient Information ===");
-        String patientId = console.getInput("Patient ID: ");
+        console.displayMessage("\n=== Obtener Información del Paciente ===");
+        
+        String patientId = console.getInput("ID del Paciente: ");
+        
         writer.println("GET_PATIENT|" + patientId);
         String response = reader.readLine();
         
         if (response.startsWith("PATIENT_DATA|")) {
             String[] parts = response.split("\\|");
             console.displayPatientInfo(parts);
-            logger.info("Patient data retrieved: " + patientId);
+            logger.info("Datos del paciente obtenidos: " + patientId);
         } else if (response.startsWith("ERROR|")) {
-            console.displayError("Failed to get patient: " + response.substring(6));
+            console.displayError("Falló al obtener paciente: " + response.substring(6));
         }
     }
     
     private void updatePatient() throws IOException {
-        console.displayMessage("\n=== Update Patient ===");
-        String patientId = console.getInput("Patient ID: ");
-        String fullName = console.getInput("New Full Name: ");
-        String contactEmail = console.getInput("New Contact Email: ");
-        String ageStr = console.getInput("New Age: ");
-        String sex = console.getInput("New Sex (M/F): ");
-        String clinicalNotes = console.getInput("New Clinical Notes: ");
+        console.displayMessage("\n=== Actualizar Paciente ===");
+        
+        String patientId = console.getInput("ID del Paciente: ");
+        String fullName = console.getInput("Nuevo Nombre Completo: ");
+        String contactEmail = console.getInput("Nuevo Email de Contacto: ");
+        String ageStr = console.getInput("Nueva Edad: ");
+        String sex = console.getInput("Nuevo Sexo (M/F): ");
+        String clinicalNotes = console.getInput("Nuevas Notas Clínicas: ");
+        
         try {
             int age = Integer.parseInt(ageStr);
+            
             String command = String.join("|", "UPDATE_PATIENT", patientId, fullName, 
                                        contactEmail, String.valueOf(age), sex, clinicalNotes);
+            
             writer.println(command);
             String response = reader.readLine();
+            
             if (response.startsWith("PATIENT_UPDATED|")) {
-                console.displaySuccess("Patient updated successfully!");
-                logger.info("Patient updated: " + patientId);
+                console.displaySuccess("¡Paciente actualizado exitosamente!");
+                logger.info("Paciente actualizado: " + patientId);
             } else if (response.startsWith("ERROR|")) {
-                console.displayError("Failed to update patient: " + response.substring(6));
+                console.displayError("Falló al actualizar paciente: " + response.substring(6));
             }
+            
         } catch (NumberFormatException e) {
-            console.displayError("Invalid age format. Please enter a number.");
+            console.displayError("Formato de edad inválido. Por favor ingrese un número.");
         }
     }
     
     private void deletePatient() throws IOException {
-        console.displayMessage("\n=== Delete Patient ===");
-        String patientId = console.getInput("Patient ID: ");
-        if (console.confirmAction("Are you sure you want to delete patient " + patientId + "? (y/N): ")) {
+        console.displayMessage("\n=== Eliminar Paciente ===");
+        
+        String patientId = console.getInput("ID del Paciente: ");
+        
+        if (console.confirmAction("¿Está seguro que desea eliminar el paciente " + patientId + "? (s/N): ")) {
             writer.println("DELETE_PATIENT|" + patientId);
             String response = reader.readLine();
+            
             if (response.startsWith("PATIENT_DELETED|")) {
-                console.displaySuccess("Patient deleted successfully!");
-                logger.info("Patient deleted: " + patientId);
+                console.displaySuccess("¡Paciente eliminado exitosamente!");
+                logger.info("Paciente eliminado: " + patientId);
             } else if (response.startsWith("ERROR|")) {
-                console.displayError("Failed to delete patient: " + response.substring(6));
+                console.displayError("Falló al eliminar paciente: " + response.substring(6));
             }
         } else {
-            console.displayMessage("Delete operation cancelled.");
+            console.displayMessage("Operación de eliminación cancelada.");
         }
     }
     
     private void submitFasta() throws IOException {
-        console.displayMessage("\n=== Submit FASTA File ===");
-        String patientId = console.getInput("Patient ID: ");
-        String fastaFilePath = console.getInput("FASTA file path: ");
+        console.displayMessage("\n=== Enviar Archivo FASTA ===");
+        
+        String patientId = console.getInput("ID del Paciente: ");
+        String fastaFilePath = console.getInput("Ruta del archivo FASTA: ");
+        
         File fastaFile = new File(fastaFilePath);
         if (!fastaFile.exists()) {
-            console.displayError("FASTA file not found: " + fastaFilePath);
+            console.displayError("Archivo FASTA no encontrado: " + fastaFilePath);
             return;
         }
-
+        
         try {
             String fastaContent = readFileContent(fastaFile);
+            
             if (!FastaValidator.isValidFasta(fastaContent)) {
-                console.displayError("Invalid FASTA format in file: " + fastaFilePath);
+                console.displayError("Formato FASTA inválido en archivo: " + fastaFilePath);
                 return;
             }
             
             String checksum = FastaValidator.calculateChecksum(fastaContent);
             int fileSize = (int) fastaFile.length();
+            
+            // Send FASTA submission command
             String command = String.join("|", "SUBMIT_FASTA", patientId, checksum, String.valueOf(fileSize));
             writer.println(command);
+            
             String response = reader.readLine();
             if ("READY_FOR_FASTA".equals(response)) {
+                // Send FASTA content
                 String[] lines = fastaContent.split("\n");
-                for (String line : lines){
+                for (String line : lines) {
                     writer.println(line);
                 }
-
                 writer.println("END_FASTA");
+                
+                // Wait for confirmation
                 response = reader.readLine();
-                if ("FASTA_RECEIVED".equals(response)){
-                    console.displaySuccess("FASTA file submitted successfully!");
-                    logger.info("FASTA submitted for patient: " + patientId);
-                    console.displayMessage("Analyzing genome for disease markers...");
+                if ("FASTA_RECEIVED".equals(response)) {
+                    console.displaySuccess("¡Archivo FASTA enviado exitosamente!");
+                    logger.info("FASTA enviado para paciente: " + patientId);
+                    
+                    // Listen for disease detection results
+                    console.displayMessage("Analizando genoma en busca de marcadores de enfermedad...");
                     listenForDiseaseDetection();
+                    
                 } else if (response.startsWith("ERROR|")) {
-                    console.displayError("FASTA submission failed: " + response.substring(6));
+                    console.displayError("Envío de FASTA falló: " + response.substring(6));
                 }
             } else if (response.startsWith("ERROR|")) {
-                console.displayError("Failed to submit FASTA: " + response.substring(6));
+                console.displayError("Falló al enviar FASTA: " + response.substring(6));
             }
+            
         } catch (Exception e) {
-            console.displayError("Error reading FASTA file: " + e.getMessage());
+            console.displayError("Error leyendo archivo FASTA: " + e.getMessage());
         }
     }
     
     private void listenForDiseaseDetection() throws IOException {
-        socket.setSoTimeout(5000);
+        // Set a timeout for disease detection results
+        socket.setSoTimeout(5000); // 5 seconds timeout
+        
         try {
             String response;
             boolean detectionFound = false;
+            
             while ((response = reader.readLine()) != null) {
                 if (response.startsWith("DISEASE_DETECTED|")) {
                     String[] parts = response.split("\\|");
@@ -253,15 +294,16 @@ public class GenomicClient {
                         detectionFound = true;
                     }
                 } else {
-                    break;
+                    break; // No more disease detection messages
                 }
             }
             
             if (!detectionFound) {
-                console.displaySuccess("No diseases detected in the genome sequence.");
+                console.displaySuccess("No se detectaron enfermedades en la secuencia genómica.");
             }
+            
         } catch (SocketTimeoutException e) {
-            console.displayMessage("Disease analysis completed.");
+            console.displayMessage("Análisis de enfermedades completado.");
         } finally {
             socket.setSoTimeout(0); // Reset timeout
         }
@@ -282,9 +324,9 @@ public class GenomicClient {
         writer.println("PING");
         String response = reader.readLine();
         if ("PONG".equals(response)) {
-            console.displaySuccess("Connection test successful!");
+            console.displaySuccess("¡Prueba de conexión exitosa!");
         } else {
-            console.displayError("Connection test failed. Response: " + response);
+            console.displayError("Prueba de conexión falló. Respuesta: " + response);
         }
     }
     
@@ -295,15 +337,18 @@ public class GenomicClient {
             if (socket != null && !socket.isClosed()) {
                 socket.close();
             }
-            logger.info("Disconnected from server");
+            logger.info("Desconectado del servidor");
         } catch (IOException e) {
-            logger.warning("Error during disconnect: " + e.getMessage());
+            logger.warning("Error durante desconexión: " + e.getMessage());
         }
     }
     
     public static void main(String[] args) {
         GenomicClient client = new GenomicClient();
+        
+        // Add shutdown hook
         Runtime.getRuntime().addShutdownHook(new Thread(client::disconnect));
+        
         try {
             client.startInteractiveSession();
         } finally {

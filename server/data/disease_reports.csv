@@ -1,0 +1,6 @@
+patient_id,disease_id,severity,detection_date,description
+P000001,D001,8,2025-09-09T16:02:47.2757533,Sequence similarity: 100.00%
+P000002,D002,6,2025-09-09T19:07:52.802644,Sequence similarity: 100.00%
+P000001,D001,8,2025-09-09T16:02:47.2757533,Sequence similarity: 100.00%
+P000002,D002,6,2025-09-09T19:07:52.802644,Sequence similarity: 100.00%
+P000006,D002,6,2025-09-09T23:58:49.6071132,Sequence similarity: 100,00%

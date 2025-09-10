@@ -12,6 +12,7 @@ public class Patient {
     private String clinicalNotes;
     private String checksumFasta;
     private int fileSizeBytes;
+    private String diseaseId;
     private boolean deleted;
     
     public Patient(String patientId, String fullName, String documentId, String contactEmail, 
@@ -26,11 +27,13 @@ public class Patient {
         this.registrationDate = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
         this.deleted = false;
         this.fileSizeBytes = 0;
+        this.diseaseId = "";
     }
     
+    // Constructor for loading from CSV
     public Patient(String patientId, String fullName, String documentId, String contactEmail,
                    String registrationDate, int age, String sex, String clinicalNotes,
-                   String checksumFasta, int fileSizeBytes, boolean deleted) {
+                   String checksumFasta, int fileSizeBytes, String diseaseId, boolean deleted) {
         this.patientId = patientId;
         this.fullName = fullName;
         this.documentId = documentId;
@@ -41,9 +44,11 @@ public class Patient {
         this.clinicalNotes = clinicalNotes;
         this.checksumFasta = checksumFasta;
         this.fileSizeBytes = fileSizeBytes;
+        this.diseaseId = diseaseId;
         this.deleted = deleted;
     }
     
+    // Getters
     public String getPatientId() { return patientId; }
     public String getFullName() { return fullName; }
     public String getDocumentId() { return documentId; }
@@ -54,8 +59,10 @@ public class Patient {
     public String getClinicalNotes() { return clinicalNotes; }
     public String getChecksumFasta() { return checksumFasta; }
     public int getFileSizeBytes() { return fileSizeBytes; }
+    public String getDiseaseId() { return diseaseId; }
     public boolean isDeleted() { return deleted; }
     
+    // Setters
     public void setFullName(String fullName) { this.fullName = fullName; }
     public void setContactEmail(String contactEmail) { this.contactEmail = contactEmail; }
     public void setAge(int age) { this.age = age; }
@@ -63,6 +70,7 @@ public class Patient {
     public void setClinicalNotes(String clinicalNotes) { this.clinicalNotes = clinicalNotes; }
     public void setChecksumFasta(String checksumFasta) { this.checksumFasta = checksumFasta; }
     public void setFileSizeBytes(int fileSizeBytes) { this.fileSizeBytes = fileSizeBytes; }
+    public void setDiseaseId(String diseaseId) { this.diseaseId = diseaseId; }
     public void setDeleted(boolean deleted) { this.deleted = deleted; }
     
     public String toCsvString() {
@@ -77,6 +85,7 @@ public class Patient {
             escapeCommas(clinicalNotes),
             escapeCommas(checksumFasta != null ? checksumFasta : ""),
             String.valueOf(fileSizeBytes),
+            escapeCommas(diseaseId != null ? diseaseId : ""),
             String.valueOf(deleted)
         );
     }

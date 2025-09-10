@@ -6,9 +6,9 @@ import java.time.format.DateTimeFormatter;
 
 public class DiseaseDetector {
     private static final Logger logger = Logger.getLogger(DiseaseDetector.class.getName());
-    private static final String DISEASE_DB_PATH = "server/disease_db/";
-    private static final String CATALOG_FILE = "server/disease_db/catalog.csv";
-    private static final String REPORTS_FILE = "server/data/disease_reports.csv";
+    private static final String DISEASE_DB_PATH = "disease_db/";
+    private static final String CATALOG_FILE = "disease_db/catalog.csv";
+    private static final String REPORTS_FILE = "data/disease_reports.csv";
     private static final String REPORTS_HEADER = "patient_id,disease_id,severity,detection_date,description";
     
     private Map<String, Disease> diseases;
@@ -32,17 +32,19 @@ public class DiseaseDetector {
                     String diseaseId = parts[0].trim();
                     String name = parts[1].trim();
                     int severity = Integer.parseInt(parts[2].trim());
+                    
+                    // Load FASTA sequence for this disease
                     String fastaFile = DISEASE_DB_PATH + diseaseId + ".fasta";
                     String sequence = loadSequenceFromFile(fastaFile);
                     
                     if (sequence != null) {
                         diseases.put(diseaseId, new Disease(diseaseId, name, severity, sequence));
-                        logger.info("Loaded disease: " + diseaseId + " - " + name);
+                        logger.info("Enfermedad cargada: " + diseaseId + " - " + name);
                     }
                 }
             }
             
-            logger.info("Disease database loaded with " + diseases.size() + " diseases");
+            logger.info("Base de datos de enfermedades cargada con " + diseases.size() + " enfermedades");
         }
     }
     
@@ -62,7 +64,7 @@ public class DiseaseDetector {
             
             return sequence.toString();
         } catch (IOException e) {
-            logger.warning("Could not load sequence from " + filePath + ": " + e.getMessage());
+            logger.warning("No se pudo cargar secuencia desde " + filePath + ": " + e.getMessage());
             return null;
         }
     }
@@ -72,19 +74,24 @@ public class DiseaseDetector {
         for (Disease disease : diseases.values()) {
             double similarity = calculateSimilarity(patientSequence, disease.getSequence());
             
+            // Consider a match if similarity is above 85%
             if (similarity >= 0.85) {
                 String message = "DISEASE_DETECTED|" + disease.getDiseaseId() + "|" + 
                                disease.getName() + "|" + disease.getSeverity() + "|" + 
-                               String.format("%.2f", similarity * 100) + "%";                
+                               String.format("%.2f", similarity * 100) + "%";
+                
                 writer.println(message);
+                
+                // Log the detection
                 String description = String.format("Sequence similarity: %.2f%%", similarity * 100);
                 logDiseaseDetection(patientId, disease.getDiseaseId(), disease.getSeverity(), description);
-                serverLogger.log("Disease detected for patient " + patientId + ": " + 
-                               disease.getName() + " (similarity: " + String.format("%.2f", similarity * 100) + "%)");
+                
+                serverLogger.log("Enfermedad detectada para paciente " + patientId + ": " + 
+                               disease.getName() + " (similitud: " + String.format("%.2f", similarity * 100) + "%)");
             }
         }
     }
-
+    
     private double calculateSimilarity(String seq1, String seq2) {
         if (seq1 == null || seq2 == null || seq1.isEmpty() || seq2.isEmpty()) {
             return 0.0;
@@ -92,6 +99,7 @@ public class DiseaseDetector {
         
         int minLength = Math.min(seq1.length(), seq2.length());
         int matches = 0;
+        
         for (int i = 0; i < minLength; i++) {
             if (seq1.charAt(i) == seq2.charAt(i)) {
                 matches++;
@@ -115,7 +123,7 @@ public class DiseaseDetector {
                 writer.println(String.join(",", patientId, diseaseId, String.valueOf(severity), timestamp, description));
             }
         } catch (IOException e) {
-            logger.severe("Error logging disease detection: " + e.getMessage());
+            logger.severe("Error registrando detección de enfermedad: " + e.getMessage());
         }
     }
     
@@ -125,21 +133,24 @@ public class DiseaseDetector {
             dbDir.mkdirs();
         }
         
+        // Create catalog file
         try (PrintWriter writer = new PrintWriter(new FileWriter(CATALOG_FILE))) {
             writer.println("disease_id,name,severity");
-            writer.println("D001,Genetic Disorder Alpha,8");
-            writer.println("D002,Hereditary Condition Beta,6");
-            writer.println("D003,Chromosomal Abnormality Gamma,9");
-            writer.println("D004,Metabolic Syndrome Delta,5");
-            writer.println("D005,Immune Deficiency Epsilon,7");
+            writer.println("D001,Trastorno Genético Alfa,8");
+            writer.println("D002,Condición Hereditaria Beta,6");
+            writer.println("D003,Anormalidad Cromosómica Gamma,9");
+            writer.println("D004,Síndrome Metabólico Delta,5");
+            writer.println("D005,Deficiencia Inmune Epsilon,7");
         }
         
+        // Create sample FASTA files
         createSampleFastaFile("D001", "ACGTACGTGGCCTTAAACCGGTAGCTAGCTAGGCTAACGTACGTGGCCTTAAACCGGTAGCTAGCTAGGCTA");
         createSampleFastaFile("D002", "GGCCTTAAACCGGTAGCTAGCTAGGCTAACGTACGTGGCCTTAAACCGGTAGCTAGCTAGGCTAACGTACGT");
         createSampleFastaFile("D003", "TAGCTAGCTAGGCTAACGTACGTGGCCTTAAACCGGTAGCTAGCTAGGCTAACGTACGTGGCCTTAAACCGG");
         createSampleFastaFile("D004", "CTAGCTAGGCTAACGTACGTGGCCTTAAACCGGTAGCTAGCTAGGCTAACGTACGTGGCCTTAAACCGGTAG");
         createSampleFastaFile("D005", "AACCGGTAGCTAGCTAGGCTAACGTACGTGGCCTTAAACCGGTAGCTAGCTAGGCTAACGTACGTGGCCTTA");
-        logger.info("Created sample disease database");
+        
+        logger.info("Base de datos de enfermedades de muestra creada");
     }
     
     private void createSampleFastaFile(String diseaseId, String sequence) throws IOException {

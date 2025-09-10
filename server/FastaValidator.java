@@ -17,6 +17,7 @@ public class FastaValidator {
             return false;
         }
         
+        // Check header line
         if (!lines[0].startsWith(">")) {
             return false;
         }
@@ -25,6 +26,7 @@ public class FastaValidator {
             return false;
         }
         
+        // Check sequence lines
         for (int i = 1; i < lines.length; i++) {
             String line = lines[i].trim().toUpperCase();
             if (!line.isEmpty() && !SEQUENCE_PATTERN.matcher(line).matches()) {
@@ -66,7 +68,7 @@ public class FastaValidator {
             
             return hexString.toString();
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("SHA-256 algorithm not available", e);
+            throw new RuntimeException("Algoritmo SHA-256 no disponible", e);
         }
     }
 }

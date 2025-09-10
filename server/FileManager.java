@@ -4,7 +4,7 @@ import java.util.logging.Logger;
 
 public class FileManager {
     private static final Logger logger = Logger.getLogger(FileManager.class.getName());
-    private static final String FASTA_DIR = "server/data/fasta_files/";
+    private static final String FASTA_DIR = "data/fasta_files/";
     
     public static void saveFastaFile(String patientId, String fastaContent) throws IOException {
         File fastaDir = new File(FASTA_DIR);
@@ -17,7 +17,7 @@ public class FileManager {
             writer.print(fastaContent);
         }
         
-        logger.info("Saved FASTA file for patient: " + patientId);
+        logger.info("Archivo FASTA guardado para paciente: " + patientId);
     }
     
     public static String loadFastaFile(String patientId) throws IOException {
@@ -38,7 +38,7 @@ public class FileManager {
         if (file.exists()) {
             boolean deleted = file.delete();
             if (deleted) {
-                logger.info("Deleted FASTA file for patient: " + patientId);
+                logger.info("Archivo FASTA eliminado para paciente: " + patientId);
             }
             return deleted;
         }

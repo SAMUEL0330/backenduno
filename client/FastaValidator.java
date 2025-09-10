@@ -68,7 +68,7 @@ public class FastaValidator {
             
             return hexString.toString();
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("SHA-256 algorithm not available", e);
+            throw new RuntimeException("Algoritmo SHA-256 no disponible", e);
         }
     }
 }

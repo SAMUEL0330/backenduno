@@ -1,0 +1,56 @@
+Sep 09, 2025 8:47:32 PM GenomicClient connect
+INFO: Connected to Genomic Server
+Sep 09, 2025 9:06:22 PM GenomicClient disconnect
+INFO: Disconnected from server
+Sep 09, 2025 9:06:52 PM GenomicClient connect
+INFO: Connected to Genomic Server
+Sep 09, 2025 9:30:18 PM GenomicClient disconnect
+INFO: Disconnected from server
+Sep 09, 2025 9:30:18 PM GenomicClient disconnect
+INFO: Disconnected from server
+Sep 09, 2025 10:07:05 PM GenomicClient connect
+INFO: Connected to Genomic Server
+Sep 09, 2025 10:08:24 PM GenomicClient createPatient
+INFO: Patient created: P000004
+Sep 09, 2025 10:09:14 PM GenomicClient getPatient
+INFO: Patient data retrieved: P000004
+Sep 09, 2025 10:09:31 PM GenomicClient getPatient
+INFO: Patient data retrieved: P000003
+Sep 09, 2025 10:14:19 PM GenomicClient startInteractiveSession
+SEVERE: Session error: No line found
+Sep 09, 2025 10:14:19 PM GenomicClient startInteractiveSession
+SEVERE: Session error: No line found
+Sep 09, 2025 10:14:19 PM GenomicClient startInteractiveSession
+SEVERE: Session error: No line found
+Sep 09, 2025 10:18:42 PM GenomicClient connect
+INFO: Connected to Genomic Server
+Sep 09, 2025 10:18:53 PM GenomicClient getPatient
+INFO: Patient data retrieved: P000004
+Sep 09, 2025 10:19:57 PM GenomicClient updatePatient
+INFO: Patient updated: P000004
+Sep 09, 2025 10:34:59 PM GenomicClient startInteractiveSession
+SEVERE: Session error: No line found
+Sep 09, 2025 10:35:21 PM GenomicClient connect
+INFO: Connected to Genomic Server
+Sep 09, 2025 10:35:43 PM GenomicClient getPatient
+INFO: Patient data retrieved: P000001
+Sep 09, 2025 10:57:50 PM GenomicClient startInteractiveSession
+SEVERE: Session error: No line found
+Sep 09, 2025 10:57:50 PM GenomicClient startInteractiveSession
+SEVERE: Session error: No line found
+Sep 09, 2025 11:06:09 PM GenomicClient connect
+INFO: Connected to Genomic Server
+Sep 09, 2025 11:06:51 PM GenomicClient createPatient
+INFO: Patient created: P000005
+Sep 09, 2025 11:09:04 PM GenomicClient submitFasta
+INFO: FASTA submitted for patient: P000005
+Sep 09, 2025 11:15:19 PM GenomicClient startInteractiveSession
+SEVERE: Session error: No line found
+sept 09, 2025 11:56:20 P. M. GenomicClient connect
+INFORMACIÓN: Conectado al Servidor Genómico
+sept 09, 2025 11:57:01 P. M. GenomicClient createPatient
+INFORMACIÓN: Paciente creado: P000006
+sept 09, 2025 11:57:24 P. M. GenomicClient getPatient
+INFORMACIÓN: Datos del paciente obtenidos: P000006
+sept 09, 2025 11:58:49 P. M. GenomicClient submitFasta
+INFORMACIÓN: FASTA enviado para paciente: P000006

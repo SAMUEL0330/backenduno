@@ -1,0 +1,34 @@
+[2025-09-09 15:25:12] Client connected: /127.0.0.1:62540
+[2025-09-09 15:26:12] Processing command: CREATE_PATIENT
+[2025-09-09 15:26:45] Processing command: CREATE_PATIENT
+[2025-09-09 15:27:30] Processing command: CREATE_PATIENT
+[2025-09-09 15:27:51] Processing command: CREATE_PATIENT
+[2025-09-09 15:29:40] Client connected: /127.0.0.1:65009
+[2025-09-09 15:30:04] Processing command: CREATE_PATIENT
+[2025-09-09 15:31:00] Processing command: CREATE_PATIENT
+[2025-09-09 20:47:32] Client connected: /127.0.0.1:64370
+[2025-09-09 20:49:27] Processing command: GET_PATIENT
+[2025-09-09 21:06:52] Client connected: /127.0.0.1:49396
+[2025-09-09 21:08:57] Processing command: GET_PATIENT
+[2025-09-09 21:30:15] Processing command: GET_PATIENT
+[2025-09-09 22:07:05] Client connected: /127.0.0.1:50630
+[2025-09-09 22:08:24] Processing command: CREATE_PATIENT
+[2025-09-09 22:08:24] Patient created: P000004 (Esteban)
+[2025-09-09 22:09:14] Processing command: GET_PATIENT
+[2025-09-09 22:09:14] Patient data retrieved: P000004
+[2025-09-09 22:09:31] Processing command: GET_PATIENT
+[2025-09-09 22:09:31] Patient data retrieved: P000003
+[2025-09-09 22:10:28] Processing command: UPDATE_PATIENT
+[2025-09-09 22:18:42] Client connected: /127.0.0.1:51615
+[2025-09-09 22:18:53] Processing command: GET_PATIENT
+[2025-09-09 22:18:53] Patient data retrieved: P000004
+[2025-09-09 22:19:57] Processing command: UPDATE_PATIENT
+[2025-09-09 22:19:57] Patient updated: P000004
+[2025-09-09 22:35:21] Client connected: /127.0.0.1:52915
+[2025-09-09 22:35:43] Processing command: GET_PATIENT
+[2025-09-09 22:35:43] Patient data retrieved: P000001
+[2025-09-09 23:06:09] Client connected: /127.0.0.1:55208
+[2025-09-09 23:06:51] Processing command: CREATE_PATIENT
+[2025-09-09 23:06:51] Patient created: P000005 (Santiago)
+[2025-09-09 23:09:04] Processing command: SUBMIT_FASTA
+[2025-09-09 23:09:04] FASTA file processed for patient: P000005
