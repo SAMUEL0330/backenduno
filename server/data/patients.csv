@@ -1,0 +1,6 @@
+patient_id,full_name,document_id,contact_email,registration_date,age,sex,clinical_notes,checksum_fasta,file_size_bytes,disease_id,deleted
+P000004,Estebitan,14526389,estebandido@gmail.com,2025-09-09T22:08:24.6648546,45,F,Gonorrea cronica,,0,,false
+P000005,Santiago,45327812,santi@gmail.com,2025-09-09T23:06:51.7632792,45,M,Hombros chuecos,6516978c3b745bcd40940390f31da4c505a079d131bda98fd2ce526c921daca7,231,,false
+P000002,Salom�,12365478,salo@gmail.com,2025-09-09T19:06:53.138553,21,M,Paciente cero,6516978c3b745bcd40940390f31da4c505a079d131bda98fd2ce526c921daca7,231,D002,true
+P000003,Samuel,12365678,samu@gmail.com,2025-09-09T19:12:52.4828013,22,M,Paciente premium,,0,,false
+P000001,Juan,12345678,juan@email.com,2025-09-09T16:00:36.0168535,30,M,Paciente de prueba,a6435d19c3ad15842580d7f0dc214722ea2cc398bfeb63873e39b6abf1d21492,229,D001,false
